@@ -271,6 +271,142 @@ app.get('/s/:slug', async (c) => {
   return response;
 });
 
+// ─────────────────────────────────────────
+// Razorpay & RBI Compliance Policy Pages (Crawler & Direct URLs)
+// ─────────────────────────────────────────
+function renderPolicyPage(title: string, bodyContent: string): Response {
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${title} — LywuAi</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; color: #1e293b; max-width: 820px; margin: 40px auto; padding: 0 20px; background: #f8fafc; }
+    .card { background: #ffffff; padding: 40px; border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
+    h1 { font-size: 26px; color: #0f172a; margin-top: 0; }
+    h2 { font-size: 16px; color: #0f172a; margin-top: 24px; font-weight: 700; }
+    p, li { font-size: 14px; color: #475569; }
+    a { color: #2563eb; text-decoration: none; font-weight: 600; }
+    a:hover { text-decoration: underline; }
+    .nav { margin-bottom: 24px; font-size: 13px; font-weight: 600; }
+    .footer { margin-top: 40px; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 20px; }
+    .badge { display: inline-block; padding: 4px 10px; background: #eff6ff; color: #2563eb; font-size: 11px; font-weight: 700; border-radius: 999px; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="nav"><a href="/">← Return to LywuAi Home</a></div>
+    <span class="badge">Legal &amp; Merchant Compliance</span>
+    ${bodyContent}
+    <div class="footer">
+      <p>© ${new Date().getFullYear()} LywuAi (https://lywuai.com). Launched with GrowthMachine Studio. All rights reserved.</p>
+      <p style="margin-top: 8px;">
+        <a href="/terms">Terms of Service</a> &bull; 
+        <a href="/privacy">Privacy Policy</a> &bull; 
+        <a href="/refund">Refund Policy</a> &bull; 
+        <a href="/shipping">Shipping Policy</a> &bull; 
+        <a href="/contact">Contact Us</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>`;
+  return new Response(html, {
+    status: 200,
+    headers: { 'Content-Type': 'text/html; charset=utf-8' },
+  });
+}
+
+// Terms of Service
+app.get('/terms', () => {
+  return renderPolicyPage(
+    'Terms of Service',
+    `<h1>Terms of Service</h1>
+    <p>Last updated: November 2026</p>
+    <h2>1. Overview</h2>
+    <p>Welcome to LywuAi (&quot;Service&quot;, &quot;Platform&quot;), available at https://lywuai.com. LywuAi provides AI-assisted website generation, static cloud hosting, lead capture forms, WhatsApp action buttons, and AI customer receptionists for entrepreneurs and small businesses.</p>
+    <h2>2. Account Registration &amp; Security</h2>
+    <p>To use our services, you must register with a valid email address and password. You are solely responsible for maintaining the confidentiality of your login credentials and for all activities that occur under your account.</p>
+    <h2>3. Pricing &amp; Billing</h2>
+    <p>We offer a 15-day Free Trial with no credit card required. Paid plans include <strong>Pro Plan (₹249/month or ₹2,499/year)</strong> and <strong>Business Plan (₹799/month or ₹7,999/year)</strong>. All payments are billed securely in Indian Rupees (INR) via our payment gateway partner Razorpay.</p>
+    <h2>4. Permissible Use &amp; Content Guidelines</h2>
+    <p>You agree not to use LywuAi to build or host websites containing fraudulent, defamatory, adult, infringing, or illegal material violating Indian laws (including the Information Technology Act, 2000) or international internet standards. Violation will result in immediate account suspension.</p>
+    <h2>5. Termination &amp; Governing Law</h2>
+    <p>We reserve the right to suspend or terminate services for terms violation. These terms are governed by the laws of India.</p>`
+  );
+});
+app.get('/terms-and-conditions', (c) => c.redirect('/terms', 301));
+
+// Privacy Policy
+app.get('/privacy', () => {
+  return renderPolicyPage(
+    'Privacy Policy',
+    `<h1>Privacy Policy</h1>
+    <p>Last updated: November 2026</p>
+    <h2>1. Information We Collect</h2>
+    <p>We collect personal information necessary to deliver our services, including your name, email address, salted password hashes, website contents, and support ticket submissions.</p>
+    <h2>2. Payment Information Security</h2>
+    <p>All online payment transactions are processed through <strong>Razorpay Software Private Limited</strong> using 256-bit SSL encryption. LywuAi does NOT store or process your credit/debit card numbers, CVVs, or UPI PINs on our servers.</p>
+    <h2>3. How We Use Your Data</h2>
+    <p>Your information is used to authenticate users, manage cloud hosting, deliver AI copy generation, send account notifications, and provide customer support. We never sell, rent, or trade user data to third parties.</p>
+    <h2>4. Contacting Us About Privacy</h2>
+    <p>If you have any questions or data deletion requests, contact our privacy officer at <a href="mailto:support@lywuai.com">support@lywuai.com</a>.</p>`
+  );
+});
+app.get('/privacy-policy', (c) => c.redirect('/privacy', 301));
+
+// Refund & Cancellation Policy
+app.get('/refund', () => {
+  return renderPolicyPage(
+    'Refund & Cancellation Policy',
+    `<h1>Refund &amp; Cancellation Policy</h1>
+    <p>Last updated: November 2026</p>
+    <h2>1. 7-Day Money-Back Guarantee</h2>
+    <p>We are dedicated to customer satisfaction. If you are not satisfied with your LywuAi Pro or Business plan subscription, you are entitled to a full 100% refund within <strong>7 days</strong> of your initial purchase.</p>
+    <h2>2. Subscription Cancellation</h2>
+    <p>You may cancel your recurring monthly or yearly subscription at any time directly through the LywuAi dashboard. Upon cancellation, your service remains active until the end of the current paid billing cycle, and no further charges will be made.</p>
+    <h2>3. Refund Processing Timeline</h2>
+    <p>Once approved, refunds are credited back to your original source of payment (Bank account, UPI ID, or Credit/Debit Card) via Razorpay within <strong>5 to 7 business days</strong>.</p>
+    <h2>4. How to Request a Refund</h2>
+    <p>Email your refund request along with your registered email and payment ID to <a href="mailto:support@lywuai.com">support@lywuai.com</a> or raise a ticket directly in the dashboard.</p>`
+  );
+});
+app.get('/refund-policy', (c) => c.redirect('/refund', 301));
+app.get('/cancellation-policy', (c) => c.redirect('/refund', 301));
+
+// Shipping & Delivery Policy
+app.get('/shipping', () => {
+  return renderPolicyPage(
+    'Shipping & Delivery Policy',
+    `<h1>Shipping &amp; Delivery Policy</h1>
+    <p>Last updated: November 2026</p>
+    <h2>1. 100% Digital SaaS Service</h2>
+    <p>LywuAi provides online software as a service (SaaS) and digital website generation tools. <strong>No physical goods or tangible shipments are involved.</strong></p>
+    <h2>2. Delivery Timeline</h2>
+    <p>Access to all software features, subscription plans, AI tools, and hosting capabilities is delivered <strong>instantly and automatically</strong> upon successful sign-up and payment verification.</p>`
+  );
+});
+app.get('/delivery-policy', (c) => c.redirect('/shipping', 301));
+
+// Contact Us
+app.get('/contact', () => {
+  return renderPolicyPage(
+    'Contact Us',
+    `<h1>Contact Us</h1>
+    <p>For support, billing inquiries, or grievance redressal, please reach out:</p>
+    <div style="background: #f1f5f9; padding: 20px; border-radius: 12px; margin-top: 20px;">
+      <p style="margin: 6px 0;"><strong>Brand:</strong> LywuAi (Launch Your Website Using AI)</p>
+      <p style="margin: 6px 0;"><strong>Parent Studio:</strong> GrowthMachine Studio</p>
+      <p style="margin: 6px 0;"><strong>Support Email:</strong> <a href="mailto:support@lywuai.com">support@lywuai.com</a></p>
+      <p style="margin: 6px 0;"><strong>Help Desk:</strong> Built-in 24/7 Support Ticket Center in the LywuAi Dashboard</p>
+      <p style="margin: 6px 0;"><strong>Operating Location:</strong> India</p>
+      <p style="margin: 6px 0;"><strong>Operating Hours:</strong> Monday &ndash; Saturday, 9:00 AM &ndash; 7:00 PM IST</p>
+    </div>`
+  );
+});
+app.get('/contact-us', (c) => c.redirect('/contact', 301));
+
 // Custom Domain Resolution & Static Assets / SPA Fallback
 app.all('*', async (c) => {
   const url = new URL(c.req.url);

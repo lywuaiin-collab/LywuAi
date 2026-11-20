@@ -11,6 +11,7 @@ import { UserGuideModal } from './components/UserGuideModal';
 import { TemplateShowcase } from './components/TemplateShowcase';
 import { BuilderAiAssistant } from './components/BuilderAiAssistant';
 import { PaymentModal } from './components/PaymentModal';
+import { PolicyModal, type PolicyTab } from './components/PolicyModal';
 
 export const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -27,11 +28,32 @@ export const App: React.FC = () => {
   const [guideModalOpen, setGuideModalOpen] = useState(false);
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [initialPaymentPlan, setInitialPaymentPlan] = useState<'pro' | 'business'>('pro');
+  const [policyModalOpen, setPolicyModalOpen] = useState(false);
+  const [policyTab, setPolicyTab] = useState<PolicyTab>('terms');
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [trial, setTrial] = useState<TrialStatus | null>(null);
 
   useEffect(() => {
     initApp();
+
+    // Check for deep-linked policy URLs (e.g. /terms, /privacy, /refund, /contact)
+    const path = window.location.pathname.toLowerCase().replace(/^\/+|\/+$/g, '');
+    if (path === 'terms' || path === 'terms-and-conditions') {
+      setPolicyTab('terms');
+      setPolicyModalOpen(true);
+    } else if (path === 'privacy' || path === 'privacy-policy') {
+      setPolicyTab('privacy');
+      setPolicyModalOpen(true);
+    } else if (path === 'refund' || path === 'refund-policy' || path === 'cancellation-policy') {
+      setPolicyTab('refund');
+      setPolicyModalOpen(true);
+    } else if (path === 'contact' || path === 'contact-us') {
+      setPolicyTab('contact');
+      setPolicyModalOpen(true);
+    } else if (path === 'shipping' || path === 'delivery') {
+      setPolicyTab('shipping');
+      setPolicyModalOpen(true);
+    }
   }, []);
 
   const initApp = async () => {
@@ -222,22 +244,57 @@ export const App: React.FC = () => {
         )}
       </main>
 
-      <footer className="border-t border-slate-200 bg-white py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 space-y-3 sm:space-y-0">
-          <div>© {new Date().getFullYear()} LywuAi — Launch Your Website Using AI. All rights reserved.</div>
-
-          <div className="studio-credit inline-flex items-center gap-2.5 rounded-full border border-slate-200/90 px-4 py-1.5 bg-white/90">
-            <span className="studio-credit__pulse h-2 w-2 shrink-0 rounded-full bg-amber-400" aria-hidden="true"></span>
-            <span className="text-[10px] uppercase tracking-[0.15em] text-slate-400 font-bold">Designed by</span>
-            <a
-              href="https://growthmachinestudio.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="relative z-10 font-bold text-slate-800 transition-colors hover:text-amber-600"
-              aria-label="Designed by GrowthMachine Studio"
+      <footer className="border-t border-slate-200 bg-white py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-6 gap-y-2 text-xs font-semibold text-slate-600">
+            <button
+              onClick={() => { setPolicyTab('terms'); setPolicyModalOpen(true); }}
+              className="hover:text-blue-600 transition"
             >
-              GrowthMachine Studio
-            </a>
+              Terms of Service
+            </button>
+            <button
+              onClick={() => { setPolicyTab('privacy'); setPolicyModalOpen(true); }}
+              className="hover:text-blue-600 transition"
+            >
+              Privacy Policy
+            </button>
+            <button
+              onClick={() => { setPolicyTab('refund'); setPolicyModalOpen(true); }}
+              className="hover:text-blue-600 transition"
+            >
+              Refund &amp; Cancellation
+            </button>
+            <button
+              onClick={() => { setPolicyTab('shipping'); setPolicyModalOpen(true); }}
+              className="hover:text-blue-600 transition"
+            >
+              Shipping &amp; Delivery
+            </button>
+            <button
+              onClick={() => { setPolicyTab('contact'); setPolicyModalOpen(true); }}
+              className="hover:text-blue-600 transition"
+            >
+              Contact Us
+            </button>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 pt-4 border-t border-slate-100 space-y-3 sm:space-y-0">
+            <div>© {new Date().getFullYear()} LywuAi — Launch Your Website Using AI. All rights reserved.</div>
+
+            <div className="studio-credit inline-flex items-center gap-2.5 rounded-full border border-slate-200/90 px-4 py-1.5 bg-white/90">
+              <span className="studio-credit__pulse h-2 w-2 shrink-0 rounded-full bg-amber-400" aria-hidden="true"></span>
+              <span className="text-[10px] uppercase tracking-[0.15em] text-slate-400 font-bold">Designed by</span>
+              <a
+                href="https://growthmachinestudio.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative z-10 font-bold text-slate-800 transition-colors hover:text-amber-600"
+                aria-label="Designed by GrowthMachine Studio"
+              >
+                GrowthMachine Studio
+              </a>
+            </div>
           </div>
         </div>
       </footer>
@@ -293,6 +350,13 @@ export const App: React.FC = () => {
       <BuilderAiAssistant
         userEmail={user?.email}
         userName={user?.name || undefined}
+      />
+
+      {/* Compliance & Policy Modal */}
+      <PolicyModal
+        isOpen={policyModalOpen}
+        initialTab={policyTab}
+        onClose={() => setPolicyModalOpen(false)}
       />
     </div>
   );
