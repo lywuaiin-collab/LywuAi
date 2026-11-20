@@ -1,0 +1,30 @@
+{
+  "name": "lywuai-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "typecheck": "npm run typecheck --workspaces",
+    "dev": "wrangler dev",
+    "dev:web": "npm run dev --workspace=apps/web",
+    "build:web": "npm run build --workspace=apps/web",
+    "build:worker": "npm run build --workspace=apps/worker",
+    "db:migrate:local": "wrangler d1 execute lywuai --local --file=./migrations/0001_content.sql && wrangler d1 execute lywuai_media --local --file=./migrations/0002_media.sql",
+    "db:migrate:remote": "wrangler d1 execute lywuai --remote --file=./migrations/0001_content.sql && wrangler d1 execute lywuai_media --remote --file=./migrations/0002_media.sql",
+    "deploy": "npm run build:web && wrangler deploy",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/user-event": "^14.6.12",
+    "jsdom": "^31.0.1",
+    "typescript": "^5.7.3",
+    "vitest": "^5.1.0",
+    "wrangler": "^3.114.17"
+  }
+}

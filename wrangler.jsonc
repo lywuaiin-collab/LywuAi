@@ -1,0 +1,30 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "lywuai",
+  "main": "apps/worker/src/index.ts",
+  "compatibility_date": "2024-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "apps/web/dist",
+    "run_worker_first": true,
+    "binding": "ASSETS"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "lywuai",
+      "database_id": "lywuai-d1-local"
+    },
+    {
+      "binding": "MEDIA_DB",
+      "database_name": "lywuai_media",
+      "database_id": "lywuai-media-d1-local"
+    }
+  ],
+  "vars": {
+    "ENVIRONMENT": "development",
+    "OPENROUTER_MODEL": "openrouter/free",
+    "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+    "SESSION_SECRET": "lywuai-development-session-secret-at-least-32-bytes"
+  }
+}

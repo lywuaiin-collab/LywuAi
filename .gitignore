@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+.output/
+.cache/
+
+# Cloudflare / Wrangler
+.wrangler/
+wrangler.lock
+
+# Local dev secrets — NEVER commit these
+.dev.vars
+.dev.vars.*
+
+# OS & editor
+.DS_Store
+Thumbs.db
+*.log
+*.local
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Test coverage
+coverage/

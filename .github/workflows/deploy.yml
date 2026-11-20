@@ -1,0 +1,138 @@
+name: CI / CD — LywuAi
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  # ─────────────────────────────────────────
+  # JOB 1 — Quality Gate (runs on every push & PR)
+  # ─────────────────────────────────────────
+  quality:
+    name: Typecheck & Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck (all workspaces)
+        run: npm run typecheck
+
+      - name: Run tests
+        run: npm test
+
+  # ─────────────────────────────────────────
+  # JOB 2 — Build (runs on every push & PR)
+  # ─────────────────────────────────────────
+  build:
+    name: Build Web SPA
+    runs-on: ubuntu-latest
+    needs: quality
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Web SPA
+        run: npm run build:web
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-dist
+          path: apps/web/dist
+          retention-days: 7
+
+  # ─────────────────────────────────────────
+  # JOB 3 — Deploy (runs ONLY on push to main)
+  # ─────────────────────────────────────────
+  deploy:
+    name: Deploy to Cloudflare
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment:
+      name: production
+      url: https://lywuai.com
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Rebuild web SPA for deploy
+        run: npm run build:web
+
+      # Apply all DB migrations in order (idempotent — skips already-applied)
+      - name: Apply migration 0001 — initial schema
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          command: d1 execute lywuai --remote --file=./migrations/0001_content.sql
+
+      - name: Apply migration 0002 — media table
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          command: d1 execute lywuai --remote --file=./migrations/0002_media.sql
+
+      - name: Apply migration 0003 — subscriptions & payments
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          command: d1 execute lywuai --remote --file=./migrations/0003_subscriptions.sql
+
+      - name: Apply migration 0004 — support tickets
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          command: d1 execute lywuai --remote --file=./migrations/0004_tickets.sql
+
+      - name: Apply migration 0005 — business custom domain
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          command: d1 execute lywuai --remote --file=./migrations/0005_business_custom_domain.sql
+
+      # Deploy Worker + static assets in one wrangler deploy
+      - name: Deploy Worker & Static Assets
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          command: deploy
+
+      - name: Deployment summary
+        run: |
+          echo "✅ LywuAi deployed successfully to production"
+          echo "🌐 Live at: https://lywuai.com"
+          echo "🕒 Deployed at: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          echo "📦 Commit: ${{ github.sha }}"

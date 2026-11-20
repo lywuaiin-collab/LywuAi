@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+@keyframes credit-pulse {
+  0%, 100% {
+    opacity: 0.45;
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.2);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 0 6px rgba(245, 158, 11, 0.25);
+  }
+}
+
+.studio-credit {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  box-shadow: 0 0 22px rgba(245, 158, 11, 0.1);
+}
+
+.studio-credit:before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -90% 18%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(245, 158, 11, 0.18), transparent 70%);
+}
+
+.studio-credit__pulse {
+  animation: credit-pulse 1.8s ease-in-out infinite;
+}
