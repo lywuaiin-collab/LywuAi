@@ -355,14 +355,12 @@ app.get('/refund', () => {
     'Refund & Cancellation Policy',
     `<h1>Refund &amp; Cancellation Policy</h1>
     <p>Last updated: November 2026</p>
-    <h2>1. 7-Day Money-Back Guarantee</h2>
-    <p>We are dedicated to customer satisfaction. If you are not satisfied with your LywuAi Pro or Business plan subscription, you are entitled to a full 100% refund within <strong>7 days</strong> of your initial purchase.</p>
-    <h2>2. Subscription Cancellation</h2>
-    <p>You may cancel your recurring monthly or yearly subscription at any time directly through the LywuAi dashboard. Upon cancellation, your service remains active until the end of the current paid billing cycle, and no further charges will be made.</p>
-    <h2>3. Refund Processing Timeline</h2>
-    <p>Once approved, refunds are credited back to your original source of payment (Bank account, UPI ID, or Credit/Debit Card) via Razorpay within <strong>5 to 7 business days</strong>.</p>
-    <h2>4. How to Request a Refund</h2>
-    <p>Email your refund request along with your registered email and payment ID to <a href="mailto:support@lywuai.com">support@lywuai.com</a> or raise a ticket directly in the dashboard.</p>`
+    <h2>LywuAi is 100% Free</h2>
+    <p>LywuAi is completely free for all users. There are <strong>no subscription fees, no recurring charges, and no credit card required</strong> to use any feature on the platform — including live publishing, custom domain connection, 24/7 AI Receptionist, and all 10 industry starter templates.</p>
+    <h2>Custom Agency Builds (GrowthMachine Studio)</h2>
+    <p>If you commission a bespoke custom web design, branding, or marketing project through our partner agency GrowthMachine Studio (<a href="https://growthmachinestudio.com/" target="_blank" rel="noopener noreferrer">growthmachinestudio.com</a>), those engagements are governed by a separate client agreement with their own payment and refund terms.</p>
+    <h2>Questions?</h2>
+    <p>If you have any questions, email us at <a href="mailto:support@lywuai.com">support@lywuai.com</a> or raise a support ticket from the LywuAi dashboard.</p>`
   );
 });
 app.get('/refund-policy', (c) => c.redirect('/refund', 301));

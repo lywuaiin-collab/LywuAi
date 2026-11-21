@@ -46,7 +46,7 @@ export const BuilderAiAssistant: React.FC<BuilderAiAssistantProps> = ({ currentS
     '🤖 How do I enable the AI Receptionist?',
     '✍️ Suggest 3 catchy hero headlines',
     '🚀 How do I publish my website?',
-    '⚡ What is included in the $3 Pro plan?',
+    '⚡ Is LywuAi really 100% free?',
   ];
 
   const scrollToBottom = () => {

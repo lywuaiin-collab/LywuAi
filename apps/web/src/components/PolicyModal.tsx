@@ -149,31 +149,26 @@ export const PolicyModal: React.FC<PolicyModalProps> = ({
 
               <h3 className="text-sm font-bold text-slate-900">4. Third-Party Disclosures</h3>
               <p>
-                We do not sell, rent, or trade your personal information. Data is only shared with authorized service partners essential for service delivery (e.g. Razorpay for payments processing).
+                We do not sell, rent, or trade your personal information. Data is only shared with authorized service partners essential for service delivery (e.g. AI and infrastructure providers).
               </p>
             </div>
           )}
 
           {tab === 'refund' && (
             <div className="space-y-4">
-              <h3 className="text-sm font-bold text-slate-900">1. 7-Day Money-Back Guarantee</h3>
+              <h3 className="text-sm font-bold text-slate-900">LywuAi is 100% Free — No Charges, No Refunds Needed</h3>
               <p>
-                We want you to be completely satisfied with LywuAi. If you upgrade to our Pro (₹249/month) or Business (₹799/month) plan and are unsatisfied for any reason, you may request a 100% full refund within <strong>7 days</strong> of your initial payment.
+                LywuAi is completely free for all users. There are <strong>no subscription fees, no recurring charges, and no credit card required</strong> to use any feature on the platform — including live publishing, custom domain connection, 24/7 AI Receptionist, and all 10 industry templates.
               </p>
 
-              <h3 className="text-sm font-bold text-slate-900">2. Cancellation Policy</h3>
+              <h3 className="text-sm font-bold text-slate-900">Custom Agency Builds (GrowthMachine Studio)</h3>
               <p>
-                You may cancel your monthly or yearly recurring subscription at any time directly through your account dashboard or by submitting a ticket. Once cancelled, your subscription will remain active until the end of your current paid billing period, and no further renewal charges will occur.
+                If you commission a bespoke custom web design, branding, or marketing project through our partner agency <strong>GrowthMachine Studio</strong> (<a href="https://growthmachinestudio.com/" target="_blank" rel="noopener noreferrer">growthmachinestudio.com</a>), those engagements are governed by a separate client agreement with their own payment and refund terms.
               </p>
 
-              <h3 className="text-sm font-bold text-slate-900">3. Refund Processing</h3>
+              <h3 className="text-sm font-bold text-slate-900">Questions?</h3>
               <p>
-                Approved refunds are initiated immediately and credited back to your original payment method (Bank account, UPI, or Credit/Debit card) via Razorpay within <strong>5 to 7 business days</strong> depending on your issuing bank.
-              </p>
-
-              <h3 className="text-sm font-bold text-slate-900">4. How to Request a Refund</h3>
-              <p>
-                To request a refund, submit a support ticket via the LywuAi dashboard or email us at <strong>support@lywuai.com</strong> with your registered email and Razorpay payment ID.
+                If you have any billing questions or concerns, email us at <strong>support@lywuai.com</strong> or raise a support ticket from the LywuAi dashboard.
               </p>
             </div>
           )}
@@ -185,9 +180,9 @@ export const PolicyModal: React.FC<PolicyModalProps> = ({
                 LywuAi provides 100% cloud-based Software as a Service (SaaS). <strong>No physical goods or packages are shipped.</strong>
               </p>
 
-              <h3 className="text-sm font-bold text-slate-900">2. Instant Delivery Timeline</h3>
+              <h3 className="text-sm font-bold text-slate-900">2. Instant Access</h3>
               <p>
-                Upon successful registration or subscription payment completion via Razorpay, your account features, builder quotas, AI capabilities, and hosting services are activated <strong>immediately and automatically</strong>. Confirmation is sent to your registered email address.
+                Upon successful registration, your account and all features are activated <strong>immediately and automatically</strong>. A confirmation is sent to your registered email address.
               </p>
             </div>
           )}
