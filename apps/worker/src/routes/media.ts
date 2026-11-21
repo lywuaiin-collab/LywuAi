@@ -1,12 +1,11 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth';
 import { validateImageMagicBytes } from '../lib/magic-bytes';
-import { getUserPlanInfo } from '../lib/subscription';
 import type { Env, HonoVariables } from '../types';
 
 export const mediaRoutes = new Hono<{ Bindings: Env; Variables: HonoVariables }>();
 
-// Upload custom image for site (enforces tiered quotas)
+// Upload custom image for site (100% Free: up to 50 images, 25MB total)
 mediaRoutes.post('/sites/:id/media', authMiddleware, async (c) => {
   try {
     const authUser = c.get('user');
@@ -21,30 +20,17 @@ mediaRoutes.post('/sites/:id/media', authMiddleware, async (c) => {
       return c.json({ error: 'Site not found or access denied' }, 404);
     }
 
-    // 2. Fetch user plan & trial
-    const planInfo = await getUserPlanInfo(c.env.DB, authUser.userId);
-    if (!planInfo.isPro && planInfo.trial.expired) {
-      return c.json(
-        { error: 'Your 15-day free trial has expired. Upgrade to Pro or Business to continue uploading media.' },
-        403
-      );
-    }
+    // Free generous limits for all users:
+    const maxImages = 50;
+    const maxTotalBytes = 25 * 1024 * 1024; // 25 MB
+    const maxSingleBytes = 2 * 1024 * 1024;  // 2 MB per image
 
-    // Tier limits:
-    // Free: max 3 images, 1 MB total, 200 KB/image
-    // Pro: max 25 images, 10 MB total, 1 MB/image
-    // Business: max 100 images, 50 MB total, 2 MB/image
-    const maxImages = planInfo.isBusiness ? 100 : planInfo.isPro ? 25 : 3;
-    const maxTotalBytes = (planInfo.isBusiness ? 50 : planInfo.isPro ? 10 : 1) * 1024 * 1024;
-    const maxSingleBytes = (planInfo.isBusiness ? 2 : planInfo.isPro ? 1 : 0.2) * 1024 * 1024;
-
-    // 3. Read binary body
+    // 2. Read binary body
     const rawBuffer = await c.req.arrayBuffer();
     const bytes = new Uint8Array(rawBuffer);
 
     if (bytes.length > maxSingleBytes) {
-      const limitStr = planInfo.isBusiness ? '2 MB' : planInfo.isPro ? '1 MB' : '200 KB';
-      return c.json({ error: `Payload Too Large: Images on your plan must be under ${limitStr}.` }, 413);
+      return c.json({ error: 'Payload Too Large: Images must be under 2 MB each.' }, 413);
     }
 
     // 4. Enforce count and storage quotas
@@ -59,14 +45,14 @@ mediaRoutes.post('/sites/:id/media', authMiddleware, async (c) => {
 
     if (currentCount >= maxImages) {
       return c.json(
-        { error: `Media upload limit reached (${maxImages} images for ${planInfo.plan.toUpperCase()} plan). Upgrade for more storage.` },
+        { error: `Media upload limit reached (${maxImages} images). Please delete existing media to upload more.` },
         413
       );
     }
 
     if (currentBytes + bytes.length > maxTotalBytes) {
       return c.json(
-        { error: `Storage limit reached for your plan. Please upgrade or delete existing media.` },
+        { error: `Storage limit reached (25 MB total). Please delete existing media to free up space.` },
         413
       );
     }

@@ -34,9 +34,7 @@ interface EditorProps {
   onSiteUpdated: (site: Site) => void;
 }
 
-export const Editor: React.FC<EditorProps> = ({ initialSite, subscription, trial: _trial, onUpgrade, onBack, onSiteUpdated }) => {
-  const isBusiness = subscription?.status === 'active' && subscription.plan === 'business';
-  const isPro = subscription?.status === 'active' && (subscription.plan === 'pro' || isBusiness);
+export const Editor: React.FC<EditorProps> = ({ initialSite, subscription: _subscription, trial: _trial, onUpgrade: _onUpgrade, onBack, onSiteUpdated }) => {
   const [site, setSite] = useState<Site>(initialSite);
   const [content, setContent] = useState<SiteContent>(initialSite.content);
   const [siteName, setSiteName] = useState(initialSite.name);
@@ -83,7 +81,7 @@ export const Editor: React.FC<EditorProps> = ({ initialSite, subscription, trial
         content,
         name: siteName,
         slug: siteSlug,
-        custom_domain: isBusiness ? (customDomain ? customDomain.trim().toLowerCase() : null) : undefined,
+        custom_domain: customDomain ? customDomain.trim().toLowerCase() : null,
       });
 
       if (res.success) {
@@ -98,7 +96,7 @@ export const Editor: React.FC<EditorProps> = ({ initialSite, subscription, trial
     return () => {
       if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
     };
-  }, [content, siteName, siteSlug, site.id, customDomain, isBusiness]);
+  }, [content, siteName, siteSlug, site.id, customDomain]);
 
   const updateContent = (updater: (prev: SiteContent) => SiteContent) => {
     dirtyRef.current = true;
@@ -112,7 +110,7 @@ export const Editor: React.FC<EditorProps> = ({ initialSite, subscription, trial
       content,
       name: siteName,
       slug: siteSlug,
-      custom_domain: isBusiness ? (customDomain ? customDomain.trim().toLowerCase() : null) : undefined,
+      custom_domain: customDomain ? customDomain.trim().toLowerCase() : null,
     });
 
     const res = await publishSite(site.id);
@@ -716,14 +714,12 @@ export const Editor: React.FC<EditorProps> = ({ initialSite, subscription, trial
                     <div className="pr-3">
                       <div className="flex items-center space-x-1.5">
                         <span className="font-bold text-slate-800 text-xs">Remove "Built with LywuAi" Badge</span>
-                        <span className="px-1.5 py-0.5 rounded text-[9px] font-black bg-amber-100 text-amber-800 border border-amber-200">
-                          PRO
+                        <span className="px-1.5 py-0.5 rounded text-[9px] font-black bg-emerald-100 text-emerald-800 border border-emerald-200">
+                          FREE
                         </span>
                       </div>
                       <p className="text-[10px] text-slate-400 mt-0.5">
-                        {isPro
-                          ? "Hide the LywuAi footer branding badge on your published website."
-                          : "Free websites include a subtle 'Built with LywuAi' badge. Upgrade to Pro to remove it."}
+                        Hide the LywuAi footer branding badge on your published website.
                       </p>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer shrink-0">
@@ -731,10 +727,6 @@ export const Editor: React.FC<EditorProps> = ({ initialSite, subscription, trial
                         type="checkbox"
                         checked={content.hide_badge || false}
                         onChange={(e) => {
-                          if (!isPro) {
-                            onUpgrade?.();
-                            return;
-                          }
                           updateContent((c) => {
                             c.hide_badge = e.target.checked;
                             return c;
@@ -788,15 +780,15 @@ export const Editor: React.FC<EditorProps> = ({ initialSite, subscription, trial
               </div>
             )}
 
-            {/* CUSTOM DOMAIN (BUSINESS PLAN EXCLUSIVE) */}
+            {/* CUSTOM DOMAIN (100% FREE) */}
             {activeTab === 'domain' && (
               <div className="space-y-4">
                 <div className="pb-2 border-b border-slate-100 flex items-start justify-between">
                   <div>
                     <div className="flex items-center space-x-1.5">
                       <h4 className="font-extrabold text-slate-900 text-sm">Custom Domain</h4>
-                      <span className="px-1.5 py-0.5 rounded text-[10px] font-black bg-indigo-100 text-indigo-800 border border-indigo-300">
-                        BUSINESS PLAN
+                      <span className="px-1.5 py-0.5 rounded text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
+                        FREE
                       </span>
                     </div>
                     <p className="text-[11px] text-slate-500 mt-0.5">
@@ -805,49 +797,30 @@ export const Editor: React.FC<EditorProps> = ({ initialSite, subscription, trial
                   </div>
                 </div>
 
-                {!isBusiness ? (
-                  <div className="p-4 rounded-2xl bg-indigo-50 border border-indigo-200/90 space-y-2.5">
-                    <div className="flex items-center space-x-2 text-indigo-900 font-bold text-xs">
-                      <Globe size={16} className="text-indigo-600" />
-                      <span>Business Exclusive Feature</span>
-                    </div>
-                    <p className="text-[11px] text-indigo-800 leading-relaxed">
-                      Connecting a custom branded domain is exclusive to the Business Plan (₹799/mo). Upgrade to Business to connect your own domain with automatic fast cloud hosting.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => onUpgrade?.('business')}
-                      className="w-full py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold text-xs shadow-sm shadow-indigo-500/20 transition flex items-center justify-center space-x-1.5"
-                    >
-                      <Sparkles size={14} />
-                      <span>Upgrade to Business — ₹799/mo</span>
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <div className="p-3.5 rounded-2xl bg-white border border-slate-200 space-y-3">
-                      <label className="block font-bold text-slate-700">Domain Name</label>
-                      <div className="flex space-x-2">
-                        <input
-                          type="text"
-                          value={customDomain}
-                          placeholder="e.g. yourbusiness.com"
-                          onChange={(e) => {
-                            setCustomDomain(e.target.value);
-                            dirtyRef.current = true;
-                          }}
-                          className="flex-1 p-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
-                        />
-                        <button
-                          type="button"
-                          disabled={domainSaving}
-                          onClick={async () => {
-                            setDomainSaving(true);
-                            setDomainMessage(null);
-                            const clean = customDomain.trim().toLowerCase();
-                            const res = await autosaveSite(site.id, { custom_domain: clean || null });
-                            setDomainSaving(false);
-                            if (res.success) {
+                <div className="space-y-4">
+                  <div className="p-3.5 rounded-2xl bg-white border border-slate-200 space-y-3">
+                    <label className="block font-bold text-slate-700">Domain Name</label>
+                    <div className="flex space-x-2">
+                      <input
+                        type="text"
+                        value={customDomain}
+                        placeholder="e.g. yourbusiness.com"
+                        onChange={(e) => {
+                          setCustomDomain(e.target.value);
+                          dirtyRef.current = true;
+                        }}
+                        className="flex-1 p-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
+                      />
+                      <button
+                        type="button"
+                        disabled={domainSaving}
+                        onClick={async () => {
+                          setDomainSaving(true);
+                          setDomainMessage(null);
+                          const clean = customDomain.trim().toLowerCase();
+                          const res = await autosaveSite(site.id, { custom_domain: clean || null });
+                          setDomainSaving(false);
+                          if (res.success) {
                               setDomainMessage({ text: clean ? 'Domain saved successfully!' : 'Domain cleared.' });
                               onSiteUpdated({ ...site, custom_domain: clean || null });
                             } else {
@@ -884,19 +857,18 @@ export const Editor: React.FC<EditorProps> = ({ initialSite, subscription, trial
                       </p>
                     </div>
                   </div>
-                )}
-              </div>
-            )}
+                </div>
+              )}
 
-            {/* 24/7 AI RECEPTIONIST CHATBOT (BUSINESS FEATURE) */}
+            {/* 24/7 AI RECEPTIONIST CHATBOT (100% FREE) */}
             {activeTab === 'ai_chat' && (
               <div className="space-y-4">
                 <div className="pb-2 border-b border-slate-100 flex items-start justify-between">
                   <div>
                     <div className="flex items-center space-x-1.5">
                       <h4 className="font-extrabold text-slate-900 text-sm">24/7 AI Receptionist</h4>
-                      <span className="px-1.5 py-0.5 rounded text-[10px] font-black bg-indigo-100 text-indigo-800 border border-indigo-300">
-                        BUSINESS PLAN
+                      <span className="px-1.5 py-0.5 rounded text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
+                        FREE
                       </span>
                     </div>
                     <p className="text-[11px] text-slate-500 mt-0.5">
@@ -904,38 +876,6 @@ export const Editor: React.FC<EditorProps> = ({ initialSite, subscription, trial
                     </p>
                   </div>
                 </div>
-
-                {/* Pricing / Value Box */}
-                <div className="p-3.5 rounded-2xl bg-gradient-to-br from-indigo-50/80 to-purple-50/80 border border-indigo-200/80 space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <Sparkles size={16} className="text-indigo-600" />
-                    <span className="font-bold text-slate-800">Included in Business Plan (₹799/mo)</span>
-                  </div>
-                  <p className="text-[11px] text-slate-600 leading-relaxed">
-                    Powered by LywuAi Copilot. Automatically learns your website's services, hours, and contact details to give accurate answers.
-                  </p>
-                </div>
-
-                {/* Business Exclusive Upgrade Banner */}
-                {!isBusiness && (
-                  <div className="p-4 rounded-2xl bg-indigo-50 border border-indigo-200/90 space-y-2.5">
-                    <div className="flex items-center space-x-2 text-indigo-900 font-bold text-xs">
-                      <Sparkles size={16} className="text-indigo-600" />
-                      <span>Business Exclusive Feature</span>
-                    </div>
-                    <p className="text-[11px] text-indigo-800 leading-relaxed">
-                      The 24/7 AI Receptionist is an exclusive feature for Business plan members. Upgrade to Business (₹799/mo) to enable automated conversational lead capture on your live website.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => onUpgrade?.('business')}
-                      className="w-full py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold text-xs shadow-sm shadow-indigo-500/20 transition flex items-center justify-center space-x-1.5"
-                    >
-                      <Sparkles size={14} />
-                      <span>Upgrade to Business — ₹799/mo (or ₹7,999/yr)</span>
-                    </button>
-                  </div>
-                )}
 
                 {/* Enable Toggle */}
                 <div className="p-3.5 rounded-2xl bg-white border border-slate-200 space-y-3">
@@ -949,10 +889,6 @@ export const Editor: React.FC<EditorProps> = ({ initialSite, subscription, trial
                         type="checkbox"
                         checked={content.ai_chat?.enabled || false}
                         onChange={(e) => {
-                          if (!isBusiness) {
-                            onUpgrade?.('business');
-                            return;
-                          }
                           updateContent((c) => {
                             if (!c.ai_chat) {
                               c.ai_chat = {

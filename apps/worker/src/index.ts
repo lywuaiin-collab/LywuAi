@@ -116,13 +116,6 @@ app.post('/api/public/chat/:slug', async (c) => {
       return c.json({ error: 'AI Receptionist is not enabled on this website.' }, 403);
     }
 
-    // Enforce Business exclusive: 24/7 AI Receptionist requires active Business plan
-    if (site.sub_status !== 'active' || site.sub_plan !== 'business') {
-      return c.json({
-        reply: "Thank you for visiting! For immediate assistance, please call us or click the WhatsApp button on this page."
-      });
-    }
-
     const brandName = content.seo.title.split('-')[0].trim() || 'Our Business';
     const botName = content.ai_chat.bot_name || `${brandName} Assistant`;
 
@@ -328,8 +321,8 @@ app.get('/terms', () => {
     <p>Welcome to LywuAi (&quot;Service&quot;, &quot;Platform&quot;), available at https://lywuai.com. LywuAi provides AI-assisted website generation, static cloud hosting, lead capture forms, WhatsApp action buttons, and AI customer receptionists for entrepreneurs and small businesses.</p>
     <h2>2. Account Registration &amp; Security</h2>
     <p>To use our services, you must register with a valid email address and password. You are solely responsible for maintaining the confidentiality of your login credentials and for all activities that occur under your account.</p>
-    <h2>3. Pricing &amp; Billing</h2>
-    <p>We offer a 15-day Free Trial with no credit card required. Paid plans include <strong>Pro Plan (₹249/month or ₹2,499/year)</strong> and <strong>Business Plan (₹799/month or ₹7,999/year)</strong>. All payments are billed securely in Indian Rupees (INR) via our payment gateway partner Razorpay.</p>
+    <h2>3. 100% Free Service &amp; Fair Use</h2>
+    <p>LywuAi provides 100% free website building, high-speed cloud hosting, WhatsApp CTAs, 24/7 AI Receptionist, and custom domain connection for all registered accounts. Custom bespoke website development is available separately through GrowthMachine Studio.</p>
     <h2>4. Permissible Use &amp; Content Guidelines</h2>
     <p>You agree not to use LywuAi to build or host websites containing fraudulent, defamatory, adult, infringing, or illegal material violating Indian laws (including the Information Technology Act, 2000) or international internet standards. Violation will result in immediate account suspension.</p>
     <h2>5. Termination &amp; Governing Law</h2>

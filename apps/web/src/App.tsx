@@ -10,7 +10,6 @@ import { SubmissionsModal } from './components/SubmissionsModal';
 import { UserGuideModal } from './components/UserGuideModal';
 import { TemplateShowcase } from './components/TemplateShowcase';
 import { BuilderAiAssistant } from './components/BuilderAiAssistant';
-import { PaymentModal } from './components/PaymentModal';
 import { PolicyModal, type PolicyTab } from './components/PolicyModal';
 
 export const App: React.FC = () => {
@@ -26,8 +25,6 @@ export const App: React.FC = () => {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [submissionsSite, setSubmissionsSite] = useState<Site | null>(null);
   const [guideModalOpen, setGuideModalOpen] = useState(false);
-  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
-  const [initialPaymentPlan, setInitialPaymentPlan] = useState<'pro' | 'business'>('pro');
   const [policyModalOpen, setPolicyModalOpen] = useState(false);
   const [policyTab, setPolicyTab] = useState<PolicyTab>('terms');
   const [subscription, setSubscription] = useState<Subscription | null>(null);
@@ -68,11 +65,6 @@ export const App: React.FC = () => {
       if (subResult.trial) setTrial(subResult.trial);
     }
     setLoading(false);
-  };
-
-  const openUpgrade = (plan: 'pro' | 'business' = 'pro') => {
-    setInitialPaymentPlan(plan);
-    setPaymentModalOpen(true);
   };
 
   const handleEditSite = async (siteId: string) => {
@@ -132,7 +124,6 @@ export const App: React.FC = () => {
         initialSite={activeSite}
         subscription={subscription}
         trial={trial}
-        onUpgrade={openUpgrade}
         onBack={() => {
           setView('dashboard');
           fetchUserSites().then(setSites);
@@ -152,7 +143,6 @@ export const App: React.FC = () => {
         trial={trial}
         onOpenAuth={() => setAuthModalOpen(true)}
         onLogout={handleLogout}
-        onUpgrade={() => openUpgrade('pro')}
         onNewSite={() => {
           if (!user) {
             setAuthModalOpen(true);
@@ -170,21 +160,21 @@ export const App: React.FC = () => {
           <div>
             {/* ── Hero ── */}
             <div className="text-center py-16 sm:py-24 max-w-3xl mx-auto space-y-6">
-              <span className="inline-flex items-center px-3.5 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200 shadow-xs">
-                ⚡ 15-Day Free Trial • Plans from ₹249/mo
+              <span className="inline-flex items-center px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-xs">
+                ⚡ 100% Free Forever • Custom Domain &amp; AI Receptionist Included
               </span>
               <h1 className="text-4xl sm:text-6xl font-black text-slate-900 tracking-tight leading-none">
                 Launch Your Business Website in 60 Seconds.
               </h1>
               <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto">
-                Professional responsive templates, smart AI copy generation, instant live preview, WhatsApp chat, and customer lead capture. Free 15-day trial, then from ₹249/month.
+                Professional responsive templates, smart AI copy generation, instant live preview, WhatsApp chat, 24/7 AI Receptionist, and your own custom domain. 100% free for everyone — no credit card, no subscription.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                 <button
                   onClick={() => setAuthModalOpen(true)}
                   className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-xl shadow-blue-500/25 transition transform hover:-translate-y-0.5"
                 >
-                  Start 15-Day Free Trial
+                  Start Building — It's 100% Free
                 </button>
                 {/* Browse Templates scrolls down — NO login popup */}
                 <a
@@ -239,7 +229,7 @@ export const App: React.FC = () => {
             onEditSite={handleEditSite}
             onViewSubmissions={(s) => setSubmissionsSite(s)}
             onDeleteSite={handleDeleteSite}
-            onUpgrade={() => openUpgrade('pro')}
+            onUpgrade={() => {}}
           />
         )}
       </main>
@@ -311,27 +301,6 @@ export const App: React.FC = () => {
             if (r.trial) setTrial(r.trial);
           });
         }}
-      />
-
-      {/* Payment / Upgrade Modal */}
-      <PaymentModal
-        isOpen={paymentModalOpen}
-        initialPlan={initialPaymentPlan}
-        onClose={() => setPaymentModalOpen(false)}
-        onSuccess={(sub) => {
-          setSubscription({
-            id: '',
-            owner_id: '',
-            plan: sub.plan as 'free' | 'pro' | 'business',
-            status: sub.status as 'active' | 'inactive' | 'cancelled' | 'past_due',
-            current_period_end: sub.current_period_end,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          });
-          setPaymentModalOpen(false);
-        }}
-        userEmail={user?.email}
-        userName={user?.name || undefined}
       />
 
       {/* Submissions Inquiries Modal */}

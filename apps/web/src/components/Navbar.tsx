@@ -15,7 +15,7 @@ interface NavbarProps {
   onOpenGuide: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ user, subscription, trial, onOpenAuth, onLogout, onUpgrade, onNewSite, onGoHome, onOpenGuide }) => {
+export const Navbar: React.FC<NavbarProps> = ({ user, subscription: _subscription, trial: _trial, onOpenAuth, onLogout, onUpgrade: _onUpgrade, onNewSite, onGoHome, onOpenGuide }) => {
   return (
     <header className="border-b border-slate-200 bg-white sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -28,8 +28,8 @@ export const Navbar: React.FC<NavbarProps> = ({ user, subscription, trial, onOpe
               <span className="font-extrabold text-xl tracking-tight text-slate-900 leading-none">
                 Lywu<span className="text-blue-600">Ai</span>
               </span>
-              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
-                ₹249/mo
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                100% Free
               </span>
             </div>
             <span className="text-[10px] font-semibold text-slate-500 tracking-tight mt-0.5">
@@ -48,14 +48,8 @@ export const Navbar: React.FC<NavbarProps> = ({ user, subscription, trial, onOpe
 
           {user ? (
             <>
-              {/* Subscription Badge */}
-              {onUpgrade && (
-                <SubscriptionBadge
-                  subscription={subscription || null}
-                  trial={trial || null}
-                  onUpgrade={onUpgrade}
-                />
-              )}
+              {/* Free Forever Badge */}
+              <SubscriptionBadge />
 
               <button
                 onClick={onNewSite}

@@ -113,9 +113,9 @@ export const PolicyModal: React.FC<PolicyModalProps> = ({
                 LywuAi is a SaaS platform providing AI-powered website building, hosting, analytics, WhatsApp CTA integrations, and conversational AI receptionists for businesses and entrepreneurs.
               </p>
 
-              <h3 className="text-sm font-bold text-slate-900">3. Accounts & Subscriptions</h3>
+              <h3 className="text-sm font-bold text-slate-900">3. 100% Free Service &amp; Fair Use</h3>
               <p>
-                You must provide accurate information upon registration. You are responsible for safeguarding your password and account activity. Subscriptions are billed on a recurring monthly or yearly basis in Indian Rupees (INR) via our payment gateway partner Razorpay.
+                LywuAi is 100% free for all registered users, including AI generation, hosting, WhatsApp integrations, 24/7 AI Receptionist, and custom domain connection. No credit card or recurring subscription is required.
               </p>
 
               <h3 className="text-sm font-bold text-slate-900">4. Permissible Use</h3>

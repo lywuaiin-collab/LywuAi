@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Site, User, Subscription, TrialStatus } from '@lywuai/shared';
-import { ExternalLink, Edit3, MessageSquare, Trash2, Plus, Sparkles, CheckCircle2, Globe, Clock, ArrowRight } from 'lucide-react';
+import { ExternalLink, Edit3, MessageSquare, Trash2, Plus, Sparkles, CheckCircle2, Globe, ArrowRight } from 'lucide-react';
 
 interface DashboardProps {
   user: User;
@@ -11,28 +11,25 @@ interface DashboardProps {
   onEditSite: (siteId: string) => void;
   onViewSubmissions: (site: Site) => void;
   onDeleteSite: (siteId: string) => void;
-  onUpgrade: () => void;
+  onUpgrade?: () => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
   user,
   sites,
-  subscription,
-  trial,
+  subscription: _subscription,
+  trial: _trial,
   onNewSite,
   onEditSite,
   onViewSubmissions,
   onDeleteSite,
-  onUpgrade,
+  onUpgrade: _onUpgrade,
 }) => {
-  const isBusiness = subscription?.status === 'active' && subscription.plan === 'business';
-  const isPro = subscription?.status === 'active' && (subscription.plan === 'pro' || isBusiness);
-  const isTrialExpired = !isPro && !!trial?.expired;
-  const canCreateSite = sites.length < 1 && !isTrialExpired;
+  const canCreateSite = sites.length < 1;
 
   return (
     <div className="space-y-8">
-      {/* Welcome & Plan Banner */}
+      {/* Welcome & Free Edition Banner */}
       <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
         <div>
           <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/10 border border-white/20 text-blue-100 mb-3">
@@ -43,78 +40,44 @@ export const Dashboard: React.FC<DashboardProps> = ({
             Hello, {user.name || user.email.split('@')[0]}!
           </h1>
           <p className="text-sm text-blue-100 mt-1 max-w-xl">
-            Manage your AI-crafted websites, edit content, configure WhatsApp CTAs, and track customer inquiries.
+            Build, edit, and publish fast websites with WhatsApp CTAs, 24/7 AI Receptionist, and your own custom domain — 100% free forever.
           </p>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/15 min-w-[220px] text-center">
-          <div className="text-xs font-semibold text-blue-200 uppercase tracking-wider">
-            {isBusiness
-              ? 'Business Plan (₹799/mo)'
-              : isPro
-              ? 'Pro Plan (₹249/mo)'
-              : trial?.expired
-              ? '⚠️ Trial Expired'
-              : `15-Day Free Trial (${trial?.days_left ?? 15}d left)`}
+        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/15 min-w-[200px] text-center">
+          <div className="text-xs font-bold text-emerald-300 uppercase tracking-wider flex items-center justify-center space-x-1">
+            <span>⚡ 100% Free Forever</span>
           </div>
           <div className="text-2xl font-black text-white mt-1">
-            {sites.length === 0 ? '0' : '1'}
+            {sites.length} / 1
           </div>
-          <div className="text-[11px] text-blue-200 mt-0.5">Active Website</div>
-          {!isBusiness && (
-            <button
-              onClick={onUpgrade}
-              className="mt-2.5 px-3 py-1 rounded-xl bg-amber-400 hover:bg-amber-500 text-slate-950 font-black text-[11px] shadow-sm transition inline-flex items-center space-x-1"
-            >
-              <span>{isPro ? 'Upgrade to Business' : 'Upgrade Plan'}</span>
-              <ArrowRight size={12} />
-            </button>
-          )}
+          <div className="text-[11px] text-blue-200 mt-0.5">Active Website Included</div>
         </div>
       </div>
-
-      {/* Trial Expired Alert Banner */}
-      {isTrialExpired && (
-        <div className="p-4 rounded-2xl bg-amber-50 border border-amber-300 text-amber-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
-          <div className="flex items-center space-x-2 text-xs">
-            <Clock size={18} className="text-amber-600 shrink-0" />
-            <span>
-              <strong>Your 15-day free trial has expired.</strong> Upgrade to Pro (₹249/mo) or Business (₹799/mo) to publish and manage your websites.
-            </span>
-          </div>
-          <button
-            onClick={onUpgrade}
-            className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shrink-0 shadow-sm transition"
-          >
-            Upgrade to Pro — ₹249/mo
-          </button>
-        </div>
-      )}
 
       {/* Sites Section Header */}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold text-slate-900">Your Websites</h2>
           <p className="text-xs text-slate-500">
-            {isBusiness
-              ? 'Business tier with Custom Domain & 24/7 AI Receptionist'
-              : isPro
-              ? 'Pro tier with WhatsApp CTAs & Fast Cloud Hosting'
-              : 'Free 15-day trial period • 1 site included'}
+            Full Access • Custom Domain, WhatsApp CTAs &amp; 24/7 AI Receptionist Included
           </p>
         </div>
         <button
           onClick={() => {
-            if (!canCreateSite) {
-              onUpgrade();
-            } else {
+            if (canCreateSite) {
               onNewSite();
             }
           }}
-          className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 transition"
+          disabled={!canCreateSite}
+          className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl font-bold text-xs transition ${
+            canCreateSite
+              ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/20'
+              : 'bg-slate-200 text-slate-500 cursor-not-allowed'
+          }`}
         >
           <Plus size={16} />
-          <span>{canCreateSite ? 'New Website' : sites.length >= 1 ? 'One Site Per Account' : 'Trial Expired — Upgrade'}</span>
+          <span>{canCreateSite ? 'New Website' : '1 Free Website Included'}</span>
         </button>
       </div>
 
@@ -129,10 +92,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             Choose from our curated starter templates, enter a quick description, and let AI generate an editable website in under 10 seconds.
           </p>
           <button
-            onClick={() => {
-              if (isTrialExpired) onUpgrade();
-              else onNewSite();
-            }}
+            onClick={onNewSite}
             className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 transition"
           >
             <Plus size={16} />

@@ -1,7 +1,6 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth';
 import { generateSiteContent } from '../lib/ai';
-import { getUserPlanInfo } from '../lib/subscription';
 import { aiGenerateInputSchema } from '@lywuai/shared';
 import type { Env, HonoVariables } from '../types';
 
@@ -19,21 +18,9 @@ aiRoutes.post('/generate', authMiddleware, async (c) => {
 
     const { template_id, description } = parseResult.data;
 
-    // Check user plan & trial
-    const planInfo = await getUserPlanInfo(c.env.DB, authUser.userId);
-    if (!planInfo.isPro && planInfo.trial.expired) {
-      return c.json(
-        { error: 'Your 15-day free trial has expired. Upgrade to Pro (₹249/mo) or Business (₹799/mo) to continue generating AI content.' },
-        403
-      );
-    }
-
-    // Tiered daily and hourly limits:
-    // Free: 10/day, 10/hr
-    // Pro: 50/day, 25/hr
-    // Business: 200/day, 60/hr
-    const maxDaily = planInfo.isBusiness ? 200 : planInfo.isPro ? 50 : 10;
-    const maxHourly = planInfo.isBusiness ? 60 : planInfo.isPro ? 25 : 10;
+    // Generous free daily and hourly limits for all users
+    const maxDaily = 100;
+    const maxHourly = 30;
 
     // Rate Limiting (Hourly and Daily via D1 rate_limits)
     const hourKey = `ai:${authUser.userId}:${new Date().toISOString().substring(0, 13)}`;
@@ -44,7 +31,7 @@ aiRoutes.post('/generate', authMiddleware, async (c) => {
       .first<{ count: number }>();
 
     if ((hourLimit?.count || 0) >= maxHourly) {
-      return c.json({ error: `Hourly AI generation limit reached (${maxHourly}/hour on your plan). Please try again shortly.` }, 429);
+      return c.json({ error: `Hourly AI generation limit reached (${maxHourly}/hour). Please try again shortly.` }, 429);
     }
 
     const dayLimit = await c.env.DB.prepare('SELECT count FROM rate_limits WHERE key = ?')
@@ -52,7 +39,7 @@ aiRoutes.post('/generate', authMiddleware, async (c) => {
       .first<{ count: number }>();
 
     if ((dayLimit?.count || 0) >= maxDaily) {
-      return c.json({ error: `Daily AI generation limit reached (${maxDaily}/day on ${planInfo.plan.toUpperCase()} plan). Resets at 00:00 UTC.` }, 429);
+      return c.json({ error: `Daily AI generation limit reached (${maxDaily}/day). Resets at 00:00 UTC.` }, 429);
     }
 
     // Run AI content generation

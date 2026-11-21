@@ -205,7 +205,7 @@ export const TemplateShowcase: React.FC<TemplateShowcaseProps> = ({ onUseTemplat
             onClick={onUseTemplate}
             className="inline-flex items-center gap-2 px-7 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-lg shadow-blue-500/25 transition transform hover:-translate-y-0.5"
           >
-            Start 15-Day Free Trial
+            Start Building — 100% Free Forever
             <ArrowRight size={16} />
           </button>
         </div>

@@ -1,7 +1,6 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth';
 import { getTemplate } from '@lywuai/templates';
-import { getUserPlanInfo } from '../lib/subscription';
 import type { Env, HonoVariables } from '../types';
 import type { Site, SiteContent } from '@lywuai/shared';
 
@@ -38,17 +37,7 @@ siteRoutes.post('/', async (c) => {
       return c.json({ error: 'Site name is required' }, 400);
     }
 
-    // 1. Check User Subscription and 15-day Trial Quotas
-    const planInfo = await getUserPlanInfo(c.env.DB, authUser.userId);
-
-    if (!planInfo.isPro && planInfo.trial.expired) {
-      return c.json(
-        { error: 'Your 15-day free trial has expired. Upgrade to Pro (₹249/mo) or Business (₹799/mo) to continue building.' },
-        403
-      );
-    }
-
-    // Site Limit: Every plan = 1 website per account
+    // Site Limit: Every account can host 1 live website completely free
     const maxSites = 1;
 
     const countResult = await c.env.DB.prepare('SELECT COUNT(*) as count FROM sites WHERE owner_id = ?')
@@ -190,14 +179,6 @@ siteRoutes.patch('/:id', async (c) => {
     }
 
     if (custom_domain !== undefined) {
-      const planInfo = await getUserPlanInfo(c.env.DB, authUser.userId);
-      if (!planInfo.isBusiness) {
-        return c.json(
-          { error: 'Custom domains are exclusive to the Business Plan (₹799/mo). Upgrade to Business to connect your own domain.' },
-          403
-        );
-      }
-
       let cleanDomain = (custom_domain || '').toLowerCase().trim()
         .replace(/^https?:\/\//i, '')
         .replace(/\/.*$/, '')
@@ -259,15 +240,6 @@ siteRoutes.post('/:id/publish', async (c) => {
   try {
     const authUser = c.get('user');
     const siteId = c.req.param('id');
-
-    // 1. Check user plan and trial
-    const planInfo = await getUserPlanInfo(c.env.DB, authUser.userId);
-    if (!planInfo.isPro && planInfo.trial.expired) {
-      return c.json(
-        { error: 'Your 15-day free trial has expired. Upgrade to Pro (₹249/mo) or Business (₹799/mo) to publish your website.' },
-        403
-      );
-    }
 
     const site = await c.env.DB.prepare(
       'SELECT id, owner_id, name, slug, template_id, content_json FROM sites WHERE id = ? AND owner_id = ?'
