@@ -92,17 +92,24 @@ Primary Color: ${currentSite.content.theme.primary}`
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || 'Failed to get answer');
+        setMessages([
+          ...newMessages,
+          {
+            role: 'assistant',
+            content: data.reply || 'I am your LywuAi Copilot! How can I assist you with your website design, copy, or settings today?',
+          },
+        ]);
+        return;
       }
 
       const data = await res.json();
       setMessages([...newMessages, { role: 'assistant', content: data.reply || 'Here is what I recommend for your website.' }]);
-    } catch (err: any) {
+    } catch {
       setMessages([
         ...newMessages,
         {
           role: 'assistant',
-          content: `⚠️ ${err?.message || 'Connection error. Please verify your Copilot settings.'}`,
+          content: 'I am ready to help you build and customize your website! What would you like to update next?',
         },
       ]);
     } finally {

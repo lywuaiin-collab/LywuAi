@@ -150,35 +150,54 @@ RULES:
 2. Answer based ONLY on the provided business details. If you do not know a specific detail (like exact custom pricing), warmly invite the visitor to call or WhatsApp us.
 3. Suggest the WhatsApp button or calling whenever someone wants to book, order, or discuss a project.`;
 
-    const model = c.env.OPENROUTER_MODEL || 'openrouter/free';
+    const apiKey = c.env.OPENROUTER_API_KEY?.trim();
+    const hasValidKey = apiKey && apiKey.startsWith('sk-or-');
+    let reply = '';
 
-    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${c.env.OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': `https://lywuai.workers.dev/s/${slug}`,
-        'X-Title': `${brandName} AI Receptionist`,
-      },
-      body: JSON.stringify({
-        model,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: message.substring(0, 500) },
-        ],
-        temperature: 0.6,
-        max_tokens: 250,
-      }),
-    });
+    if (hasValidKey) {
+      try {
+        const model = c.env.OPENROUTER_MODEL || 'openrouter/free';
 
-    if (!res.ok) {
-      return c.json({
-        reply: "Thank you for asking! For quick assistance, please reach out via our WhatsApp or phone button.",
-      });
+        const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+            'HTTP-Referer': `https://lywuai.workers.dev/s/${slug}`,
+            'X-Title': `${brandName} AI Receptionist`,
+          },
+          body: JSON.stringify({
+            model,
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: message.substring(0, 500) },
+            ],
+            temperature: 0.6,
+            max_tokens: 250,
+          }),
+        });
+
+        if (res.ok) {
+          const data: any = await res.json();
+          reply = data.choices?.[0]?.message?.content || '';
+        }
+      } catch (e) {
+        console.warn('OpenRouter chat fetch failed:', e);
+      }
     }
 
-    const data: any = await res.json();
-    const reply = data.choices?.[0]?.message?.content || "Thank you for contacting us! How else can I help you today?";
+    if (!reply) {
+      const q = message.toLowerCase();
+      if (q.includes('price') || q.includes('cost') || q.includes('rate') || q.includes('how much') || q.includes('quote')) {
+        reply = `Hello! We offer transparent, tailored solutions. Please tap our WhatsApp or Call button for an instant quote and custom estimate for your project!`;
+      } else if (q.includes('where') || q.includes('location') || q.includes('address') || q.includes('hours') || q.includes('time') || q.includes('open')) {
+        reply = contactInfo ? `Here are our details:\n${contactInfo}\nFeel free to tap our WhatsApp or Call button to reach us directly!` : `We are open and ready to assist you! Please tap our WhatsApp or Call button to get in touch immediately.`;
+      } else if (q.includes('service') || q.includes('offer') || q.includes('what do you do') || q.includes('menu')) {
+        reply = servicesList ? `Here are some of our key offerings:\n${servicesList}\nReach out via WhatsApp or phone to learn more or book a service!` : `Thank you for asking! We specialize in top-quality services. Tap our WhatsApp button to speak with us directly!`;
+      } else {
+        reply = `Hello! Welcome to ${brandName}. We're glad you're here! How can we assist you today? Feel free to tap our WhatsApp or phone button for fast direct communication.`;
+      }
+    }
 
     // Record rate limit
     await c.env.DB.prepare(
