@@ -13,12 +13,12 @@
     {
       "binding": "DB",
       "database_name": "lywuai",
-      "database_id": "ad616b58-1640-4b62-9b88-a8226eb35f2b"
+      "database_id": "4492628d-c607-4169-be76-0718ea45e808"
     },
     {
       "binding": "MEDIA_DB",
       "database_name": "lywuai_media",
-      "database_id": "a139aeb6-a191-4290-b111-16dc16182bae"
+      "database_id": "1be56ebc-130e-4496-9341-3b3ba139cf31"
     }
   ],
   "vars": {
