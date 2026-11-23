@@ -1,6 +1,6 @@
 import React from 'react';
 import type { User, Subscription, TrialStatus } from '@lywuai/shared';
-import { Plus, LogOut, User as UserIcon } from 'lucide-react';
+import { Plus, LogOut, User as UserIcon, Sparkles } from 'lucide-react';
 import { SubscriptionBadge } from './SubscriptionBadge';
 
 interface NavbarProps {
@@ -39,6 +39,17 @@ export const Navbar: React.FC<NavbarProps> = ({ user, subscription: _subscriptio
         </div>
 
         <nav className="flex items-center space-x-2.5">
+          <a
+            href="https://connect.lywuai.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-indigo-200 bg-indigo-50/80 hover:bg-indigo-100 text-indigo-700 font-bold text-xs transition shadow-2xs"
+            title="Open LiwuAI Connect - AI Social Media Workspace"
+          >
+            <Sparkles size={13} className="text-indigo-600" />
+            <span>Social Connect ↗</span>
+          </a>
+
           <button
             onClick={onOpenGuide}
             className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs transition"

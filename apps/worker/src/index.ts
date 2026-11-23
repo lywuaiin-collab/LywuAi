@@ -417,10 +417,32 @@ app.get('/contact', () => {
 });
 app.get('/contact-us', (c) => c.redirect('/contact', 301));
 
+// Direct alias for LiwuAi Connect social workspace
+app.get('/connect', (c) => c.redirect('https://connect.lywuai.com', 302));
+app.get('/connect/*', (c) => {
+  const url = new URL(c.req.url);
+  const path = url.pathname.replace(/^\/connect/, '') || '/';
+  return c.redirect(`https://connect.lywuai.com${path}${url.search}`, 302);
+});
+
 // Custom Domain Resolution & Static Assets / SPA Fallback
 app.all('*', async (c) => {
   const url = new URL(c.req.url);
   const host = url.hostname.toLowerCase();
+
+  // Reverse proxy for LiwuAi Connect (connect.lywuai.com -> lywuaiconnect.lywuaiconnect.workers.dev)
+  if (host === 'connect.lywuai.com') {
+    const targetUrl = new URL(url.pathname + url.search, 'https://lywuaiconnect.lywuaiconnect.workers.dev');
+    const proxyHeaders = new Headers(c.req.raw.headers);
+    proxyHeaders.set('X-Forwarded-Host', host);
+    proxyHeaders.set('X-Forwarded-Proto', 'https');
+    return await fetch(targetUrl.toString(), {
+      method: c.req.method,
+      headers: proxyHeaders,
+      body: ['GET', 'HEAD'].includes(c.req.method) ? undefined : c.req.raw.body,
+      redirect: 'follow',
+    });
+  }
 
   // If request is made via a custom domain (not lywuai.com, workers.dev, or localhost)
   if (
