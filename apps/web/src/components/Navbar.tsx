@@ -29,7 +29,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user, subscription: _subscriptio
                 Lywu<span className="text-blue-600">Ai</span>
               </span>
               <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                100% Free
+                $1/month only
               </span>
             </div>
             <span className="text-[10px] font-semibold text-slate-500 tracking-tight mt-0.5">

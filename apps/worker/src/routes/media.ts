@@ -5,7 +5,7 @@ import type { Env, HonoVariables } from '../types';
 
 export const mediaRoutes = new Hono<{ Bindings: Env; Variables: HonoVariables }>();
 
-// Upload custom image for site (100% Free: up to 50 images, 25MB total)
+// Upload custom image for site (Subscription: $1/month, up to 50 images, 25MB total)
 mediaRoutes.post('/sites/:id/media', authMiddleware, async (c) => {
   try {
     const authUser = c.get('user');

@@ -12,7 +12,7 @@ export interface UserPlanInfo {
 }
 
 /**
- * LywuAi is 100% Free for all users.
+ * LywuAi is $1/month only.
  * All premium features (Custom Domain, 24/7 AI Receptionist, WhatsApp CTAs, badge removal)
  * are unlocked unconditionally for every registered account.
  */

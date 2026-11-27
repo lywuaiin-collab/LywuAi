@@ -60,7 +60,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
             {isRegister ? 'Create Your Account' : 'Welcome Back'}
           </h2>
           <p className="text-xs text-slate-500 mt-1">
-            Build and publish fast, high-converting websites — 100% Free Forever
+            Build and publish fast, high-converting websites — $1/month only
           </p>
         </div>
 

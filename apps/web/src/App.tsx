@@ -161,20 +161,20 @@ export const App: React.FC = () => {
             {/* ── Hero ── */}
             <div className="text-center py-16 sm:py-24 max-w-3xl mx-auto space-y-6">
               <span className="inline-flex items-center px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-xs">
-                ⚡ 100% Free Forever • Custom Domain &amp; AI Receptionist Included
+                ⚡ $1/month only • Custom Domain &amp; AI Receptionist Included
               </span>
               <h1 className="text-4xl sm:text-6xl font-black text-slate-900 tracking-tight leading-none">
                 Launch Your Business Website in 60 Seconds.
               </h1>
               <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto">
-                Professional responsive templates, smart AI copy generation, instant live preview, WhatsApp chat, 24/7 AI Receptionist, and your own custom domain. 100% free for everyone — no credit card, no subscription.
+                Professional responsive templates, smart AI copy generation, instant live preview, WhatsApp chat, 24/7 AI Receptionist, and your own custom domain. $1/month only — credit card required.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                 <button
                   onClick={() => setAuthModalOpen(true)}
                   className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-xl shadow-blue-500/25 transition transform hover:-translate-y-0.5"
                 >
-                  Start Building — It's 100% Free
+                  Start Building — Only /month
                 </button>
                 {/* Browse Templates scrolls down — NO login popup */}
                 <a

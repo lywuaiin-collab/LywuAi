@@ -113,9 +113,9 @@ export const PolicyModal: React.FC<PolicyModalProps> = ({
                 LywuAi is a SaaS platform providing AI-powered website building, hosting, analytics, WhatsApp CTA integrations, and conversational AI receptionists for businesses and entrepreneurs.
               </p>
 
-              <h3 className="text-sm font-bold text-slate-900">3. 100% Free Service &amp; Fair Use</h3>
+              <h3 className="text-sm font-bold text-slate-900">3. Subscription Pricing & Terms</h3>
               <p>
-                LywuAi is 100% free for all registered users, including AI generation, hosting, WhatsApp integrations, 24/7 AI Receptionist, and custom domain connection. No credit card or recurring subscription is required.
+                LywuAi requires a $1/month subscription for all users, including AI generation, hosting, WhatsApp integrations, 24/7 AI Receptionist, and custom domain connection. No credit card or recurring subscription is required.
               </p>
 
               <h3 className="text-sm font-bold text-slate-900">4. Permissible Use</h3>
@@ -156,7 +156,7 @@ export const PolicyModal: React.FC<PolicyModalProps> = ({
 
           {tab === 'refund' && (
             <div className="space-y-4">
-              <h3 className="text-sm font-bold text-slate-900">LywuAi is 100% Free — No Charges, No Refunds Needed</h3>
+              <h3 className="text-sm font-bold text-slate-900">LywuAi Subscription Terms: $1/month, Auto-renews, No Refunds</h3>
               <p>
                 LywuAi is completely free for all users. There are <strong>no subscription fees, no recurring charges, and no credit card required</strong> to use any feature on the platform — including live publishing, custom domain connection, 24/7 AI Receptionist, and all 10 industry templates.
               </p>

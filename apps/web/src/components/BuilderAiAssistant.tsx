@@ -1,17 +1,48 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Sparkles, X, Send, Bot, MessageSquare, AlertCircle, Lightbulb, CheckCircle2, Loader2 } from 'lucide-react';
+import { Sparkles, X, Send, Bot, MessageSquare, AlertCircle, Lightbulb, CheckCircle2, Loader2, Play, Globe, Smartphone, Rocket } from 'lucide-react';
 import type { SiteContent } from '@lywuai/shared';
 import { submitSupportTicket } from '../api';
 
 interface BuilderAiAssistantProps {
   currentSite?: {
+    id?: string;
     name: string;
     template_id: string;
+    slug?: string;
+    status?: string;
+    custom_domain?: string | null;
     content: SiteContent;
   } | null;
   userEmail?: string;
   userName?: string;
 }
+
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+interface SiteContext {
+  id?: string;
+  name: string;
+  template_id: string;
+  slug?: string;
+  status?: string;
+  custom_domain?: string | null;
+  headline?: string;
+  primaryColor?: string;
+  whatsappEnabled?: boolean;
+  whatsappNumber?: string | null;
+  aiBotEnabled?: boolean;
+  aiBotName?: string;
+}
+
+const ACTION_LABELS: Record<string, { label: string; icon: React.ElementType }> = {
+  publish: { label: 'Publish Website', icon: Rocket },
+  'connect-domain': { label: 'Connect Domain', icon: Globe },
+  'enable-whatsapp': { label: 'Enable WhatsApp', icon: Smartphone },
+  'enable-ai-bot': { label: 'Enable AI Receptionist', icon: Play },
+};
 
 interface Message {
   role: 'user' | 'assistant';
@@ -31,6 +62,14 @@ export const BuilderAiAssistant: React.FC<BuilderAiAssistantProps> = ({ currentS
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [pendingAction, setPendingAction] = useState<string | null>(null);
+  const sessionIdRef = useRef<string>(() => {
+    const existing = localStorage.getItem('lywuai_copilot_session');
+    if (existing) return existing;
+    const newId = `anon_${crypto.randomUUID()}`;
+    localStorage.setItem('lywuai_copilot_session', newId);
+    return newId;
+  }());
 
   // Ticket form state
   const [ticketCategory, setTicketCategory] = useState<'problem' | 'suggestion'>('problem');
@@ -46,7 +85,7 @@ export const BuilderAiAssistant: React.FC<BuilderAiAssistantProps> = ({ currentS
     '🤖 How do I enable the AI Receptionist?',
     '✍️ Suggest 3 catchy hero headlines',
     '🚀 How do I publish my website?',
-    '⚡ Is LywuAi really 100% free?',
+    '⚡ Is LywuAi really $1/month only?',
   ];
 
   const scrollToBottom = () => {
@@ -58,6 +97,25 @@ export const BuilderAiAssistant: React.FC<BuilderAiAssistantProps> = ({ currentS
       scrollToBottom();
     }
   }, [messages, isOpen]);
+
+  const buildSiteContext = (): SiteContext | null => {
+    if (!currentSite) return null;
+    const content = currentSite.content;
+    return {
+      id: currentSite.id,
+      name: currentSite.name,
+      template_id: currentSite.template_id,
+      slug: currentSite.slug,
+      status: currentSite.status,
+      custom_domain: currentSite.custom_domain ?? undefined,
+      headline: content.sections.hero?.headline,
+      primaryColor: content.theme?.primary,
+      whatsappEnabled: content.contact_actions?.enable_whatsapp,
+      whatsappNumber: content.contact_actions?.whatsapp_number ?? undefined,
+      aiBotEnabled: content.ai_chat?.enabled,
+      aiBotName: content.ai_chat?.bot_name,
+    };
+  };
 
   const handleSend = async (textToSend?: string) => {
     const text = (textToSend || input).trim();
@@ -74,12 +132,7 @@ export const BuilderAiAssistant: React.FC<BuilderAiAssistantProps> = ({ currentS
     setLoading(true);
 
     try {
-      const siteContext = currentSite
-        ? `Site Name: ${currentSite.name}
-Template: ${currentSite.template_id}
-Current Headline: ${currentSite.content.sections.hero.headline}
-Primary Color: ${currentSite.content.theme.primary}`
-        : 'User is browsing the builder dashboard.';
+      const siteContext = buildSiteContext();
 
       const res = await fetch('/api/assistant', {
         method: 'POST',
@@ -87,6 +140,8 @@ Primary Color: ${currentSite.content.theme.primary}`
         body: JSON.stringify({
           messages: newMessages.map((m) => ({ role: m.role, content: m.content })),
           siteContext,
+          sessionId: sessionIdRef.current,
+          siteId: currentSite?.id ?? undefined,
         }),
       });
 
@@ -103,7 +158,13 @@ Primary Color: ${currentSite.content.theme.primary}`
       }
 
       const data = await res.json();
-      setMessages([...newMessages, { role: 'assistant', content: data.reply || 'Here is what I recommend for your website.' }]);
+      const assistantReply = data.reply || 'Here is what I recommend for your website.';
+      setMessages([...newMessages, { role: 'assistant', content: assistantReply }]);
+
+      // If AI suggested an action, offer it to the user
+      if (data.suggestedAction && ACTION_LABELS[data.suggestedAction]) {
+        setPendingAction(data.suggestedAction);
+      }
     } catch {
       setMessages([
         ...newMessages,
@@ -114,6 +175,79 @@ Primary Color: ${currentSite.content.theme.primary}`
       ]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const executePendingAction = async () => {
+    if (!pendingAction || !currentSite) return;
+    setLoading(true);
+
+    try {
+      switch (pendingAction) {
+        case 'publish': {
+          const res = await fetch(`/api/sites/${currentSite.id}/publish`, { method: 'POST' });
+          const data = await res.json();
+          if (res.ok && data.url) {
+            setMessages([
+              ...messages,
+              {
+                role: 'assistant',
+                content: `🚀 Your site is now live! View it at: ${data.url}\n\nShare this link with your customers. Want me to help with anything else?`,
+              },
+            ]);
+          } else {
+            setMessages([
+              ...messages,
+              { role: 'assistant', content: data.error || 'Publish failed. Please try again from the editor.' },
+            ]);
+          }
+          break;
+        }
+        case 'connect-domain': {
+          setMessages([
+            ...messages,
+            {
+              role: 'assistant',
+              content: `🌐 To connect your custom domain: Go to the **Domain** tab in the editor sidebar, enter your domain (e.g. www.yourbusiness.com), add a CNAME record in your DNS settings pointing to our edge gateway, then click Save Domain. Free SSL is automatic!`,
+            },
+          ]);
+          break;
+        }
+        case 'enable-whatsapp': {
+          setMessages([
+            ...messages,
+            {
+              role: 'assistant',
+              content: `📱 To enable WhatsApp: Open the **CTA (WhatsApp & Call)** tab in the editor sidebar, turn on Floating WhatsApp Button, enter your phone number with country code (e.g. +91 98765 43210), and save.`,
+            },
+          ]);
+          break;
+        }
+        case 'enable-ai-bot': {
+          setMessages([
+            ...messages,
+            {
+              role: 'assistant',
+              content: `🤖 To enable your 24/7 AI Receptionist: Go to the **AI Bot** tab in the editor sidebar, toggle on 24/7 AI Receptionist, set a bot name and welcome greeting, then save.`,
+            },
+          ]);
+          break;
+        }
+        default: {
+          setMessages([
+            ...messages,
+            { role: 'assistant', content: `I've noted the action "${pendingAction}". Please let me know if you need help completing it!` },
+          ]);
+        }
+      }
+    } catch {
+      setMessages([
+        ...messages,
+        { role: 'assistant', content: `I couldn't complete the "${pendingAction}" action automatically. You can do it manually from the editor sidebar.` },
+      ]);
+    } finally {
+      setLoading(false);
+      setPendingAction(null);
     }
   };
 
@@ -211,6 +345,18 @@ Primary Color: ${currentSite.content.theme.primary}`
                 ))}
               </div>
 
+              {pendingAction && ACTION_LABELS[pendingAction] && (
+                <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl mb-2 flex items-center gap-2 shrink-0">
+                  <Play size={14} className="text-emerald-600" />
+                  <span className="text-[10px] font-bold text-emerald-800">AI suggests: {ACTION_LABELS[pendingAction].label}</span>
+                  <button
+                    onClick={executePendingAction}
+                    className="ml-auto px-2 py-1 rounded bg-emerald-600 text-white text-[10px] font-bold hover:bg-emerald-700 transition"
+                  >
+                    Do It
+                  </button>
+                </div>
+              )}
               {/* Message List */}
               <div className="flex-1 p-3.5 overflow-y-auto space-y-3 text-xs bg-slate-50/50">
                 {messages.map((m, idx) => (

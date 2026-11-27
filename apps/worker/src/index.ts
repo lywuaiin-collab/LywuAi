@@ -340,8 +340,8 @@ app.get('/terms', () => {
     <p>Welcome to LywuAi (&quot;Service&quot;, &quot;Platform&quot;), available at https://lywuai.com. LywuAi provides AI-assisted website generation, static cloud hosting, lead capture forms, WhatsApp action buttons, and AI customer receptionists for entrepreneurs and small businesses.</p>
     <h2>2. Account Registration &amp; Security</h2>
     <p>To use our services, you must register with a valid email address and password. You are solely responsible for maintaining the confidentiality of your login credentials and for all activities that occur under your account.</p>
-    <h2>3. 100% Free Service &amp; Fair Use</h2>
-    <p>LywuAi provides 100% free website building, high-speed cloud hosting, WhatsApp CTAs, 24/7 AI Receptionist, and custom domain connection for all registered accounts. Custom bespoke website development is available separately through GrowthMachine Studio.</p>
+    <h2>3. Subscription Pricing 3. Subscription Pricing & Terms Terms</h2>
+    <p>LywuAi provides $1/month website building, high-speed cloud hosting, WhatsApp CTAs, 24/7 AI Receptionist, and custom domain connection for all registered accounts. Custom bespoke website development is available separately through GrowthMachine Studio.</p>
     <h2>4. Permissible Use &amp; Content Guidelines</h2>
     <p>You agree not to use LywuAi to build or host websites containing fraudulent, defamatory, adult, infringing, or illegal material violating Indian laws (including the Information Technology Act, 2000) or international internet standards. Violation will result in immediate account suspension.</p>
     <h2>5. Termination &amp; Governing Law</h2>
@@ -374,7 +374,7 @@ app.get('/refund', () => {
     'Refund & Cancellation Policy',
     `<h1>Refund &amp; Cancellation Policy</h1>
     <p>Last updated: November 2026</p>
-    <h2>LywuAi is 100% Free</h2>
+    <h2>LywuAi is $1/month only</h2>
     <p>LywuAi is completely free for all users. There are <strong>no subscription fees, no recurring charges, and no credit card required</strong> to use any feature on the platform — including live publishing, custom domain connection, 24/7 AI Receptionist, and all 10 industry starter templates.</p>
     <h2>Custom Agency Builds (GrowthMachine Studio)</h2>
     <p>If you commission a bespoke custom web design, branding, or marketing project through our partner agency GrowthMachine Studio (<a href="https://growthmachinestudio.com/" target="_blank" rel="noopener noreferrer">growthmachinestudio.com</a>), those engagements are governed by a separate client agreement with their own payment and refund terms.</p>

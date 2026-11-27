@@ -40,13 +40,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
             Hello, {user.name || user.email.split('@')[0]}!
           </h1>
           <p className="text-sm text-blue-100 mt-1 max-w-xl">
-            Build, edit, and publish fast websites with WhatsApp CTAs, 24/7 AI Receptionist, and your own custom domain — 100% free forever.
+            Build, edit, and publish fast websites with WhatsApp CTAs, 24/7 AI Receptionist, and your own custom domain — $1/month only.
           </p>
         </div>
 
         <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/15 min-w-[200px] text-center">
           <div className="text-xs font-bold text-emerald-300 uppercase tracking-wider flex items-center justify-center space-x-1">
-            <span>⚡ 100% Free Forever</span>
+            <span>⚡ $1/month only</span>
           </div>
           <div className="text-2xl font-black text-white mt-1">
             {sites.length} / 1
