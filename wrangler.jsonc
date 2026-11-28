@@ -23,6 +23,6 @@
   ],
   "vars": {
     "ENVIRONMENT": "production",
-    "SESSION_SECRET": "lywuai-production-session-secret-at-least-32-bytes-change-this-in-production"
+    "TURNSTILE_SITE_KEY": "0x4AAAAAAA..."
   }
 }
