@@ -13,18 +13,16 @@
     {
       "binding": "DB",
       "database_name": "lywuai",
-      "database_id": "8435c9c5-936e-4382-bf48-51a96a2a4ab1"
+      "database_id": "ad616b58-1640-4b62-9b88-a8226eb35f2b"
     },
     {
       "binding": "MEDIA_DB",
       "database_name": "lywuai_media",
-      "database_id": "682cf17b-0a29-43f5-bcfe-d2a9e4ea99a7"
+      "database_id": "a139aeb6-a191-4290-b111-16dc16182bae"
     }
   ],
   "vars": {
-    "ENVIRONMENT": "development",
-    "OPENROUTER_MODEL": "openrouter/free",
-    "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
-    "SESSION_SECRET": "lywuai-development-session-secret-at-least-32-bytes"
+    "ENVIRONMENT": "production",
+    "SESSION_SECRET": "lywuai-production-session-secret-at-least-32-bytes-change-this-in-production"
   }
 }
