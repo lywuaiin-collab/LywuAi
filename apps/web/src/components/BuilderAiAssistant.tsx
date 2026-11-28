@@ -63,13 +63,7 @@ export const BuilderAiAssistant: React.FC<BuilderAiAssistantProps> = ({ currentS
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [pendingAction, setPendingAction] = useState<string | null>(null);
-  const sessionIdRef = useRef(() => {
-    const existing = localStorage.getItem('lywuai_copilot_session');
-    if (existing) return existing;
-    const newId = `anon_${crypto.randomUUID()}`;
-    localStorage.setItem('lywuai_copilot_session', newId);
-    return newId;
-  })();
+  const sessionIdRef = useRef<string>(crypto.randomUUID());
 
   // Ticket form state
   const [ticketCategory, setTicketCategory] = useState<'problem' | 'suggestion'>('problem');
